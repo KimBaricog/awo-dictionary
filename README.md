@@ -1,50 +1,69 @@
-# Welcome to your Expo app 👋
+# AWO Dictionary 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A simple and fast mobile dictionary app built with React Native and Expo. It lets users search English words and instantly get meanings, phonetics, examples, and pronunciation audio.
 
-## Get started
+---
 
-1. Install dependencies
+## 📱 About the App
 
-   ```bash
-   npm install
-   ```
+AWO Dictionary is designed to be lightweight, easy to use, and beginner-friendly. It helps users quickly understand English words without distractions.
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## ✨ Features
 
-In the output, you'll find options to open the app in a
+- 🔍 Instant word search
+- 📖 Detailed meanings and definitions
+- 🔊 Pronunciation audio support
+- 📝 Search history tracking
+- 🧠 Example sentences
+- 🧹 Delete individual history items
+- 📱 Clean and modern UI
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## ⚙️ How It Works
 
-## Get a fresh project
+1. Enter a word in the search bar
+2. Tap the search button
+3. View meanings, phonetics, and examples
+4. The word is automatically saved in history
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
-```
+## 🧾 History Feature
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- Saves all searched words locally
+- Allows users to delete specific entries
+- Automatically updates in real time
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🛠️ Built With
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- React Native
+- Expo
+- TypeScript
+- Dictionary API (`https://api.dictionaryapi.dev/`)
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 🎯 Purpose
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project was built to practice React Native development and API integration while creating a useful real-world dictionary app.
+
+---
+
+## 🚀 Future Improvements
+
+- Favorites system ⭐
+- Offline mode
+- Dark mode 🌙
+- Better animations
+- Word suggestions while typing
+
+---
+
+## 📌 Author
+
+Made with ❤️ by AWO

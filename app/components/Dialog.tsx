@@ -1,0 +1,185 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+
+const TRIVIA = [
+  "HONEY NEVER SPOILS.",
+  "BANANAS ARE BERRIES, BUT STRAWBERRIES ARE NOT.",
+  "OCTOPUSES HAVE THREE HEARTS.",
+  "THE EIFFEL TOWER CAN GROW TALLER IN SUMMER.",
+  "SHARKS EXISTED BEFORE TREES.",
+  "A DAY ON VENUS IS LONGER THAN A YEAR ON VENUS.",
+  "WOMBAT POOP IS SQUARE-SHAPED.",
+  "COWS HAVE BEST FRIENDS AND GET STRESSED WHEN SEPARATED.",
+  "A CLOUD CAN WEIGH MORE THAN A MILLION POUNDS.",
+  "SLOTHS CAN HOLD THEIR BREATH LONGER THAN DOLPHINS.",
+  "PENGUINS HAVE KNEES HIDDEN UNDER THEIR FEATHERS.",
+  "THE MOON QUAKES JUST LIKE EARTH DOES.",
+  "STARS EAT PLANETS SOMETIMES.",
+  "A SHRIMP'S HEART IS LOCATED IN ITS HEAD.",
+  "THE DRYEST PLACE ON EARTH IS IN ANTARCTICA.",
+  "A GROUP OF FERRETS IS CALLED A BUSINESS.",
+  "SEA OTTERS HOLD HANDS WHILE SLEEPING SO THEY DON'T DRIFT APART.",
+  "TURRITOPSIS DOHRNII IS A JELLYFISH THAT LIVES FOREVER.",
+  "SCOTLAND HAS 421 WORDS FOR SNOW.",
+  "THE FIRST ORANGE WAS ACTUALLY GREEN.",
+  "A SNAIL CAN SLEEP FOR THREE YEARS.",
+  "THERE ARE MORE WAYS TO ARRANGE A DECK OF CARDS THAN ATOMS ON EARTH.",
+  "FLAMINGOS ARE ONLY PINK BECAUSE THEY EAT SHRIMP.",
+  "A JOLT OF LIGHTNING IS FIVE TIMES HOTTER THAN THE SUN.",
+  "THE INVENTOR OF THE FRISBEE WAS TURNED INTO A FRISBEE AFTER DEATH.",
+  "HUMMINGBIRDS ARE THE ONLY BIRDS THAT CAN FLY BACKWARDS.",
+  "KANGAROOS CANNOT WALK BACKWARDS.",
+  "A CAT HAS 32 MUSCLES IN EACH EAR.",
+  "PEANUTS ARE NOT NUTS; THEY ARE LEGUMES.",
+  "AN OSTRICH'S EYE IS BIGGER THAN ITS BRAIN.",
+  "CLEOPATRA LIVED CLOSER TO THE IPHONE THAN THE PYRAMIDS.",
+  "MOLES CAN DIG 300 FEET OF TUNNEL IN A SINGLE NIGHT.",
+  "THE COLOSSAL SQUID HAS EYES THE SIZE OF BASKETBALLS.",
+  "POLAR BEAR SKIN IS ACTUALLY BLACK UNDER THEIR WHITE FUR.",
+  "A TANTALIZING 99% OF THE GOLD ON EARTH IS IN ITS CORE.",
+  "THE TOTAL WEIGHT OF ALL ANTS ON EARTH IS ROUGHLY EQUAL TO ALL HUMANS.",
+  "RATS LAUGH WHEN YOU TICKLE THEM.",
+  "PIRATES WORE EYE PATCHES TO KEEP ONE EYE ADJUSTED TO THE DARK.",
+  "THE KING OF HEARTS IS THE ONLY KING WITHOUT A MUSTACHE.",
+  "A PIECE OF PAPER CAN BE FOLDED MORE THAN 7 TIMES IF IT IS THIN ENOUGH.",
+  "BEES CAN FLY HIGHER THAN MOUNT EVEREST.",
+  "APPLES FLOAT IN WATER BECAUSE THEY ARE 25% AIR.",
+  "THE CHORDS FOR THE PIANO WERE INVENTED BEFORE THE PIANO ITSELF.",
+  "A WOODPECKER'S TONGUE WRAPS AROUND ITS BRAIN TO PROTECT IT.",
+  "CHESS WAS INVENTED IN INDIA, NOT RUSSIA.",
+  "COWS DON'T HAVE UPPER FRONT TEETH.",
+  "THE MOON SMELLS LIKE SPENT GUNPOWDER.",
+  "AN INDIVIDUAL BLOOD CELL TAKES ABOUT 60 SECONDS TO CIRCULATE THE BODY.",
+  "GOLDFISH DON'T ACTUALLY HAVE A THREE-SECOND MEMORY.",
+  "THERE IS NO SOUND IN SPACE BECAUSE THERE IS NO AIR TO CARRY IT.",
+  "MOUNT EVEREST IS NOT THE CLOSEST POINT TO SPACE; MT. CHIMBORAZO IS.",
+  "A HUMAN COULD SWIM THROUGH THE ARTERIES OF A BLUE WHALE.",
+  "BANANAS GLOW BLUE UNDER BLACK LIGHTS WHEN THEY ARE RIPE.",
+  "THE GREAT WALL OF CHINA IS NOT VISIBLE FROM THE MOON WITH THE NAKED EYE.",
+  "SQUIRRELS ARE RESPONSIBLE FOR PLANTING THOUSANDS OF TREES EVERY YEAR.",
+  "THE FINGERPRINTS OF KOALAS ARE VIRTUALLY INDISTINGUISHABLE FROM HUMANS.",
+  "MATCHES WERE INVENTED AFTER LIGHTERS.",
+  "BUTTERFLIES TASTE WITH THEIR FEET.",
+  "ALL THE PLANETS IN OUR SOLAR SYSTEM COULD FIT BETWEEN EARTH AND THE MOON.",
+  "PIGS CAN'T LOOK UP INTO THE SKY.",
+  "ANATIDAEPHOBIA IS THE FEAR THAT A DUCK IS WATCHING YOU.",
+  "THE LION KING WAS ORIGINALLY TITLED 'KING OF THE JUNGLE'.",
+  "A BOLT OF LIGHTNING CONTAINS ENOUGH ENERGY TO TOAST 100,000 SLICES OF BREAD.",
+  "A SINGLE TEASPOON OF A NEUTRON STAR WOULD WEIGH 6 BILLION TONS.",
+  "THERE ARE MORE TREES ON EARTH THAN STARS IN THE MILKY WAY.",
+];
+
+const PREFIX = "DID YOU KNOW? ";
+const TYPING_SPEED = 40; // Slightly faster for longer sentences
+
+export default function Dialog() {
+  const [currentText, setCurrentText] = useState("");
+  const [fullText, setFullText] = useState("");
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const triggerRandomTrivia = useCallback(() => {
+    const randomTrivia = TRIVIA[Math.floor(Math.random() * TRIVIA.length)];
+    // Prepend the prefix to the selected trivia
+    setFullText(`${PREFIX}${randomTrivia}`);
+
+    const nextTime = Math.floor(Math.random() * 4000) + 6000;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(triggerRandomTrivia, nextTime);
+  }, []);
+
+  useEffect(() => {
+    triggerRandomTrivia();
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [triggerRandomTrivia]);
+
+  useEffect(() => {
+    if (!fullText) return;
+
+    let index = 0;
+    setCurrentText("");
+
+    const typingInterval = setInterval(() => {
+      setCurrentText(fullText.slice(0, index + 1));
+      index++;
+
+      if (index >= fullText.length) {
+        clearInterval(typingInterval);
+      }
+    }, TYPING_SPEED);
+
+    return () => clearInterval(typingInterval);
+  }, [fullText]);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.pixelShadow}>
+        <View style={styles.dialog}>
+          <Text style={styles.name}>awo</Text>
+          <View>
+            <Text style={styles.text}>{currentText}</Text>
+          </View>
+        </View>
+      </View>
+      <View style={styles.triangle} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    width: "60%",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    position: "absolute",
+    top: -25,
+    left: 130,
+    right: 20,
+  },
+  pixelShadow: {
+    width: "100%",
+    paddingBottom: 6,
+    paddingRight: 6,
+  },
+  dialog: {
+    backgroundColor: "white",
+    width: "100%",
+    minHeight: 100, // Increased height to accommodate the prefix
+    padding: 10,
+    borderRadius: 15,
+    zIndex: 2,
+  },
+
+  text: {
+    fontFamily: "sans-serif",
+    fontSize: 12, // Slightly smaller to ensure "Did you know?" fits well
+    lineHeight: 15,
+    fontWeight: "600",
+    textAlign: "left",
+    color: "#000",
+    // We handle the casing in the TRIVIA array directly now
+  },
+  name: {
+    color: "#7C3AED",
+    fontWeight: "bold",
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  triangle: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 50,
+    borderRightWidth: 50,
+    borderBottomWidth: 20,
+    borderLeftColor: "transparent",
+    borderRightColor: "transparent",
+    borderBottomColor: "white",
+    position: "absolute",
+    top: 60,
+    left: -20,
+    zIndex: 1,
+  },
+});
