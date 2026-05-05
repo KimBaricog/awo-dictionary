@@ -1,7 +1,19 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Owldialog from "./Dialog";
 import Gearbtn from "./Gearbtn";
+import Settings from "./Settings";
 export default function Header() {
+  const [showSettings, setSettings] = useState(false);
+
+  const openSettings = () => {
+    setSettings(true);
+  };
+
+  const closeSettings = () => {
+    setSettings(false);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -9,8 +21,11 @@ export default function Header() {
           <Text style={styles.logoText}>AWO</Text>
           Dictionary
         </Text>
+
         <View style={{ position: "absolute", right: 20, top: 30 }}>
-          <Gearbtn />
+          <Pressable onPress={openSettings}>
+            <Gearbtn />
+          </Pressable>
         </View>
       </View>
 
@@ -20,8 +35,10 @@ export default function Header() {
           style={styles.logo}
         />
         <Owldialog />
-        <View style={{ width: 250 }}></View>
+        <View style={{ width: 250 }} />
       </View>
+
+      <Settings visible={showSettings} openSetting={closeSettings} />
     </View>
   );
 }

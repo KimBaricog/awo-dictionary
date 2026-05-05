@@ -5,11 +5,16 @@ import Xbutton from "./Xbotton";
 type Props = {
   history: string[];
   onDelete: (item: string) => void;
+  onSearch: (word: string) => void;
 };
 
-function History({ history, onDelete }: Props) {
+function History({ history, onDelete, onSearch }: Props) {
   const isEmpty = history.length === 0;
 
+  // ✅ always show only latest 5
+  const limitedHistory = history.slice(0, 5);
+
+  const length = limitedHistory.length;
   return (
     <View style={style.container}>
       <View style={style.head}>
@@ -20,10 +25,17 @@ function History({ history, onDelete }: Props) {
         {isEmpty ? (
           <Blankpage showpage={true} />
         ) : (
-          history.map((item: string, index: number) => (
+          limitedHistory.map((item: string, index: number) => (
             <View key={index} style={styles.historyItem}>
-              <Text style={styles.historyText}>{item}</Text>
+              {/* CLICK TO SEARCH AGAIN */}
+              <Pressable
+                style={styles.wordContainer}
+                onPress={() => onSearch(item)}
+              >
+                <Text style={styles.historyText}>{item}</Text>
+              </Pressable>
 
+              {/* DELETE BUTTON */}
               <Pressable onPress={() => onDelete(item)}>
                 <Xbutton />
               </Pressable>
@@ -31,35 +43,33 @@ function History({ history, onDelete }: Props) {
           ))
         )}
       </View>
+
+      <Text style={[style.mainText, isEmpty && { display: "none" }]}>
+        Tap a history item to search again{"\n"}
+        <Text>{length}/5</Text>
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   historyItem: {
+    marginTop: 15,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    backgroundColor: "#7c3aed1f",
+    borderRadius: 5,
+  },
+
+  wordContainer: {
+    flex: 1,
   },
 
   historyText: {
     fontSize: 16,
     color: "#111827",
-  },
-
-  deleteBtn: {
-    backgroundColor: "#EF4444",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-
-  deleteText: {
-    color: "white",
-    fontWeight: "bold",
   },
 });
 
@@ -89,6 +99,13 @@ const style = StyleSheet.create({
     fontSize: 15,
     color: "#7c3aed",
     fontWeight: "bold",
+  },
+
+  mainText: {
+    color: "gray",
+    width: "100%",
+    textAlign: "center",
+    marginTop: 10,
   },
 });
 

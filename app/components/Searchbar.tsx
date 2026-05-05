@@ -3,9 +3,9 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 type Props = {
   value: string;
   onChangeText: (text: string) => void;
-  onSearch: () => void;
   loading: boolean;
   showpage: boolean;
+  onSearch: (text?: string) => void;
 };
 
 const SearchBar: React.FC<Props> = ({
@@ -24,8 +24,7 @@ const SearchBar: React.FC<Props> = ({
         style={styles.input}
         maxLength={50}
       />
-
-      <Pressable style={styles.button} onPress={onSearch}>
+      <Pressable style={styles.button} onPress={() => onSearch(value)}>
         <Text style={styles.buttonText}>
           {loading ? "Searching..." : "Search"}
         </Text>

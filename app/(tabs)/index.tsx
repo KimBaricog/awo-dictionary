@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { Audio } from "expo-av";
+import Errorpage from "../components/Error";
 import Headers from "../components/Header";
 import History from "../components/History";
 import Pausebtn from "../components/Pausebtn";
@@ -52,6 +53,13 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   const [showPage, setShowpage] = useState(true);
+  const [showError, setShowerror] = useState(true);
+
+  const [Errortext, setErrortext] = useState("");
+  const [Errormessage, setErrormessage] = useState("");
+  type ImageKey = "notaword" | "nowifi";
+
+  const [Errorimage, setErrorimage] = useState<ImageKey>("notaword");
 
   const [history, setHistory] = useState<string[]>([]);
   const [hideHistorypage, setHideHistory] = useState(false);
@@ -92,6 +100,13 @@ export default function App() {
   const hideHistory = () => {
     setHideHistory(true);
   };
+
+  // SHOW HISTORY AND HIDES ERROR PAGE
+  const hideError = () => {
+    setShowerror(true);
+    setHideHistory(false);
+  };
+
   //SAVED WORDS IN HISTORY
   useEffect(() => {
     const saveHistory = async () => {
@@ -105,40 +120,54 @@ export default function App() {
     saveHistory();
   }, [history]);
 
-  const searchWord = async () => {
-    if (!word.trim() || loading) return;
+  const searchWord = async (searchText?: string) => {
+    const query = (searchText ?? word).trim();
+
+    if (!query || loading) return;
+
+    setWord(query);
 
     setHistory((prev) => {
-      if (prev.includes(word)) return prev;
-
-      return [word, ...prev];
+      if (prev.includes(query)) return prev;
+      return [query, ...prev];
     });
 
     showthepage();
     setLoading(true);
     setData(null);
+    setShowerror(true);
     hideHistory();
 
     try {
       const res = await fetch(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,
+        `https://api.dictionaryapi.dev/api/v2/entries/en/${query}`,
       );
 
       const json = await res.json();
 
       if (!res.ok || !Array.isArray(json)) {
         setData(null);
-        alert("Word not found");
-        setHideHistory(false);
+        setErrortext("Word Not Found!");
+        setErrormessage("Make sure the word you input exist");
+        setErrorimage("notaword");
+        setShowerror(false);
+        setHideHistory(true);
         setWord("");
         return;
       }
 
       setData(json?.[0] ?? null);
     } catch (err) {
-      alert(err);
+      setTimeout(() => {
+        setShowerror(false);
+        setErrortext("Connection Error!");
+        setErrormessage("Check your internet connection and try again");
+        setErrorimage("nowifi");
+      }, 1500);
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
     }
   };
 
@@ -225,7 +254,6 @@ export default function App() {
                     onPress={() => playAudio(p.audio)}
                   >
                     {isPlaying ? <Pausebtn /> : <Playbtn />}
-                    <Text style={styles.playText}>{playingAudio}</Text>
                   </Pressable>
                 </View>
               )}
@@ -258,9 +286,23 @@ export default function App() {
       <View style={{ display: hideHistorypage ? "none" : "flex" }}>
         <History
           history={history}
+          onSearch={searchWord}
           onDelete={(item: string) => {
             setHistory((prev) => prev.filter((word) => word !== item));
           }}
+        />
+      </View>
+      <View
+        style={{
+          ...styles.Errorcontainer,
+          display: showError ? "none" : "flex",
+        }}
+      >
+        <Errorpage
+          text={Errortext}
+          Message={Errormessage}
+          imageselect={Errorimage}
+          onClose={hideError}
         />
       </View>
     </ScrollView>
@@ -268,6 +310,15 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  Errorcontainer: {
+    position: "absolute",
+    top: 300,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
   container: {
     flex: 1,
     backgroundColor: "#f8f7fa",
@@ -316,7 +367,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   playBtn: {
-    backgroundColor: "#000000",
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 10,
