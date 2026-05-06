@@ -1,4 +1,6 @@
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+import { Modal, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import Xbutton from "./Xbotton";
 
 function Settings({
@@ -8,13 +10,41 @@ function Settings({
   visible: boolean;
   openSetting: () => void;
 }) {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  // LOAD SAVED VALUE
+  useEffect(() => {
+    const load = async () => {
+      const saved = await AsyncStorage.getItem("dark_mode");
+
+      if (saved !== null) {
+        setIsDarkMode(saved === "true");
+      }
+
+      setReady(true);
+    };
+
+    load();
+  }, []);
+
+  // SAVE WHEN CHANGED
+  const toggleTheme = async (value: boolean) => {
+    setIsDarkMode(value);
+    await AsyncStorage.setItem("dark_mode", String(value));
+  };
+
+  if (!ready) return null;
+
   return (
     <Modal transparent animationType="fade" visible={visible}>
       <View style={style.container}>
-        <View style={style.main}>
+        <View
+          style={[style.main, isDarkMode && { backgroundColor: "#040f26" }]}
+        >
           {/* HEADER */}
           <View style={style.header}>
-            <Text style={style.headText}>
+            <Text style={[style.headText, isDarkMode && { color: "white" }]}>
               <Text style={{ color: "#7C3AED", fontWeight: "bold" }}>AWO </Text>
               Settings
             </Text>
@@ -26,7 +56,23 @@ function Settings({
 
           {/* LIST */}
           <View style={style.listContainer}>
-            <View style={style.list}>
+            <View
+              style={[
+                style.list,
+                isDarkMode && { backgroundColor: "#f9c2ff9b" },
+              ]}
+            >
+              <Text>Switch Theme</Text>
+
+              <Switch value={isDarkMode} onValueChange={toggleTheme} />
+            </View>
+
+            <View
+              style={[
+                style.list,
+                isDarkMode && { backgroundColor: "#f9c2ff9b" },
+              ]}
+            >
               <Text>Download offline mode</Text>
 
               <Pressable style={style.downloadBtn}>
@@ -86,7 +132,7 @@ const style = StyleSheet.create({
   },
 
   downloadBtn: {
-    backgroundColor: "#b771e5",
+    backgroundColor: "#459d57",
     width: 100,
     paddingVertical: 10,
     borderRadius: 10,
