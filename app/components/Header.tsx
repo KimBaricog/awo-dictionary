@@ -1,49 +1,62 @@
-import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Owldialog from "./Dialog";
 import Gearbtn from "./Gearbtn";
-import Settings from "./Settings";
-export default function Header() {
-  const [showSettings, setSettings] = useState(false);
 
-  const openSettings = () => {
-    setSettings(true);
-  };
-
-  const closeSettings = () => {
-    setSettings(false);
-  };
-
+export default function Header({
+  theme,
+  openSettings,
+}: {
+  theme: boolean;
+  openSettings: () => void;
+}) {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>
-          <Text style={styles.logoText}>AWO</Text>
+        <Text
+          style={[
+            styles.title,
+            {
+              color: theme ? "white" : "black",
+            },
+          ]}
+        >
+          <Text style={{ color: "#7C3AED" }}>AWO</Text>
           Dictionary
         </Text>
 
-        <View style={{ position: "absolute", right: 20, top: 30 }}>
+        <View style={styles.gearContainer}>
           <Pressable onPress={openSettings}>
-            <Gearbtn />
+            <Gearbtn theme={theme} />
           </Pressable>
         </View>
       </View>
 
-      <View style={styles.awocontainer}>
+      <View
+        style={[
+          styles.awocontainer,
+          {
+            backgroundColor: theme ? "#4b2c69" : "#d8c4f0",
+          },
+        ]}
+      >
         <Image
           source={require("../../assets/images/awo.png")}
           style={styles.logo}
         />
+
         <Owldialog />
+
         <View style={{ width: 250 }} />
       </View>
-
-      <Settings visible={showSettings} openSetting={closeSettings} />
     </View>
   );
 }
-
 const styles = StyleSheet.create({
+  gearContainer: {
+    position: "absolute",
+    right: 20,
+    top: 30,
+  },
   container: {
     display: "flex",
     flexDirection: "column",

@@ -13,9 +13,11 @@ import { Audio } from "expo-av";
 import Errorpage from "../components/Error";
 import Headers from "../components/Header";
 import History from "../components/History";
+
 import Pausebtn from "../components/Pausebtn";
 import Playbtn from "../components/Playbtn";
 import SearchBar from "../components/Searchbar";
+import Settings from "../components/Settings";
 import Xbotton from "../components/Xbotton";
 
 interface Phonetic {
@@ -43,7 +45,7 @@ interface WordData {
   meanings: Meaning[];
 }
 
-export default function App() {
+export default function main() {
   const [word, setWord] = useState("");
   const [data, setData] = useState<WordData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -63,7 +65,39 @@ export default function App() {
 
   const [history, setHistory] = useState<string[]>([]);
   const [hideHistorypage, setHideHistory] = useState(false);
+  const [showSettings, setSettings] = useState(false);
+  const [theme, setSwitch] = useState(true);
 
+  const closeSettings = () => {
+    setSettings(false);
+  };
+
+  const Themeswitch = async (value: boolean) => {
+    try {
+      setSwitch(value);
+
+      await AsyncStorage.setItem("dark_mode", String(value));
+    } catch (err) {
+      console.log("Theme save error:", err);
+    }
+  };
+  useEffect(() => {
+    const loadTheme = async () => {
+      try {
+        const saved = await AsyncStorage.getItem("dark_mode");
+
+        if (saved !== null) {
+          setSwitch(saved === "true");
+        }
+      } catch (err) {
+        console.log("Theme load error:", err);
+      }
+    };
+
+    loadTheme();
+  }, []);
+
+  //////////
   const showthepage = () => {
     setShowpage((prev) => !prev);
   };
@@ -211,9 +245,14 @@ export default function App() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={{
+        ...styles.container,
+        backgroundColor: theme ? "#040f26" : "white",
+      }}
+    >
       <View style={styles.header}>
-        <Headers />
+        <Headers theme={theme} openSettings={() => setSettings(true)} />
       </View>
       <SearchBar
         value={word}
@@ -221,6 +260,7 @@ export default function App() {
         onSearch={searchWord}
         loading={loading}
         showpage={showPage}
+        theme={theme}
       />
 
       {loading && (
@@ -290,6 +330,7 @@ export default function App() {
           onDelete={(item: string) => {
             setHistory((prev) => prev.filter((word) => word !== item));
           }}
+          theme={theme}
         />
       </View>
       <View
@@ -305,6 +346,12 @@ export default function App() {
           onClose={hideError}
         />
       </View>
+      <Settings
+        visible={showSettings}
+        openSetting={closeSettings}
+        SwitchTheme={Themeswitch}
+        theme={theme}
+      />
     </ScrollView>
   );
 }
